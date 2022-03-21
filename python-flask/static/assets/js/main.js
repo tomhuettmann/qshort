@@ -250,7 +250,6 @@ function editLinkFormSubmitted() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200 && oldPath !== newPath) {
-                // noinspection DuplicatedCode
                 const masterKeyCookieKey = "storedMasterKeys";
                 const masterKeyCookie = readCookie(masterKeyCookieKey);
                 let storedMasterKeys = masterKeyCookie !== null ? JSON.parse(masterKeyCookie) : JSON.parse("{}");
@@ -315,7 +314,6 @@ function deleteLink(link, swalWithBootstrapButtons) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                // noinspection DuplicatedCode
                 const masterKeyCookieKey = "storedMasterKeys";
                 const masterKeyCookie = readCookie(masterKeyCookieKey);
                 let storedMasterKeys = masterKeyCookie !== null ? JSON.parse(masterKeyCookie) : JSON.parse("{}");

@@ -3,42 +3,17 @@ import io
 import re
 
 import qrcode
-from flask_apispec import MethodResource, doc, use_kwargs, marshal_with
-from flask_restful import request
+# noinspection PyProtectedMember
+from flask_restful import request, Resource
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from helpers.Logger import bind_logging
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from helpers.RequestParser import parser
-from marshmallow import fields, Schema
 
 
-# noinspection PyUnusedLocal
-class QR(MethodResource):
-    @doc(description="Post endpoint for generating QR-Codes from given shortenedUrl", tags=["qr-code"])
-    @use_kwargs(
-        {
-            "shortenedUrl": fields.Str(description="The shortened url from which a QR-Code should be generated. "
-                                                   "Example: google.de")
-        },
-        location="query")
-    @marshal_with(Schema().from_dict(
-        {
-            "encodedImage": fields.Str(
-                example="iVBORw0KGgoAAAANSUhEUgAAANIAAADSAQAAAAAX4qPvAAABL0lEQVR4nO2YMW7EIBRE3w+WUmIpB8hR8NVyM3yUPcBKUK"
-                        "7EalKAd50ibUBhpzFmmpE1/8//hgan+gzpuOGN3/HfOQiSpOREUEFKTpKksXR24LKZbYC+VrANMLOlj5ZhuOV5tJDuiNxN"
-                        "y0jc6buIvHbVMhjnJUWAfW11JKn00TIM94ATITm98qhi0fntbuCPm30knR1yOoEiICUgJCdFP3sdHX3XJwyA/fNm4J1sKJ"
-                        "0d+osv8Jh3pXQ4ZyidnfpuUEHRF+qsG/3s8+7PPUBHKKmgOJLOXnnkC+zrddG+OiB/TO+XhuaSahpwmtsv5zrCqyHC5HV0"
-                        "3qd1WbAtm1HjaTCdf8qd92n8zUR2BfzVNJTOnly4vMu2ep7dL6f+ooiro8vrf90TbX5pw12aPY++AWyxtvegEaI2AAAAAE"
-                        "lFTkSuQmCC"),
-            "message": fields.Str(example="Created QR-Code")
-        }
-    ), code=201, description="Successful created a QR-Code from the given shortenedUrl")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Required shortenedUrl parameter not set or not valid")
-        }
-    ), code=400, description="Required shortenedUrl was not set or does not conform an url")
-    def post(self, **kwargs):
+class QR(Resource):
+    @staticmethod
+    def post():
         log = bind_logging(request)
 
         args = parser.parse_args()

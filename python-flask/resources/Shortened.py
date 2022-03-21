@@ -3,58 +3,20 @@ import string
 from datetime import datetime
 
 import bcrypt
-from flask_apispec import MethodResource, doc, use_kwargs, marshal_with
-from flask_restful import request
+# noinspection PyProtectedMember
+from flask_restful import request, Resource
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from helpers.Logger import bind_logging
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from helpers.MongoCollection import col
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from helpers.RequestParser import parser
-from marshmallow import fields, Schema
 from nanoid import generate
 
 
-# noinspection PyMethodMayBeStatic,PyUnusedLocal
-class Shortened(MethodResource):
-    @doc(description="Get endpoint for resolving data from path", tags=["url-shortening"])
-    @use_kwargs(
-        {
-            "path": fields.Str(description="The shortened path which should be resolved. "
-                                           "Example: 9adu2"),
-            "password": fields.Str(description="The password to resolve protected paths. "
-                                               "Example: test123")
-        },
-        location="query")
-    @marshal_with(Schema().from_dict(
-        {
-            "path": fields.Str(example="9adu2"),
-            "clicks": fields.Int(example="10"),
-            "clickLimit": fields.Int(example="100"),
-            "urls": fields.List(fields.Str(), example=["https://google.de, google.de"]),
-            "date": fields.Str(example="None"),
-            "created": fields.Str(example="2022-03-07 14:36:46.364000"),
-            "edited": fields.Str(example="None"),
-            "message": fields.Str(example="Got shortened url")
-        }
-    ), code=200, description="The given path and optional password successfully make resolving data possible")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Required path parameter not set")
-        }
-    ), code=400, description="The required path parameter is missing")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Password does not match")
-        }
-    ), code=401, description="The given password parameter does not enable authorization for the protected path to "
-                             "resolve the data")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="No link found for path")
-        }
-    ), code=404, description="There is no link stored matching the given path")
-    def get(self, **kwargs):
+class Shortened(Resource):
+    @staticmethod
+    def get():
         log = bind_logging(request)
         args = parser.parse_args()
         path: str = args["path"]
@@ -97,44 +59,8 @@ class Shortened(MethodResource):
                    "message": "No link found for path"
                }, 404
 
-    @doc(description="Post endpoint for creating shortened link", tags=["url-shortening"])
-    @use_kwargs(
-        {
-            "urls": fields.List(fields.Str(), description="The target urls of the shortened url. "
-                                                          'Example: ["google.de", "https://google.de"]'),
-            "password": fields.Str(description="The password to protect the shortened url. "
-                                               "Example: test123"),
-            "endDurationDate": fields.Str(description="The end duration until shortened url is valid. "
-                                                      "Example: 22-01-01T13:37"),
-            "wish": fields.Str(description="The desired path of the shortened url. "
-                                           "Example: myFavoritePath"),
-            "length": fields.Int(description="The desired length of the shortened url path. "
-                                             "Example: 15"),
-            "clickLimit": fields.Int(description="The amount of clicks until the shortened url is valid. "
-                                                 "Example: 100")
-        }, location="query")
-    @marshal_with(Schema().from_dict(
-        {
-            "path": fields.Str(example="9adu2"),
-            "urls": fields.List(fields.Str(), example=["https://google.de, google.de"]),
-            "password": fields.Str(example="test123"),
-            "date": fields.Str(example="25-12-31T13:37"),
-            "masterKey": fields.Str(example="1yYLJutiadpgLkVuT6yysMfSxg7NigTY"),
-            "message": fields.Str(example="Created shortened url")
-        }
-    ), code=201, description="There was successfully created a shortened url by the given parameters")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Required urls parameter not set or not valid")
-        }
-    ), code=400, description="The required urls parameter is missing or does not contain valid urls")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Wish already taken")
-        }
-    ), code=409, description="There exists already a shortened url with the same path as the desired given by wish "
-                             "parameter")
-    def post(self, **kwargs):
+    @staticmethod
+    def post():
         log = bind_logging(request)
 
         args = parser.parse_args()
@@ -218,53 +144,8 @@ class Shortened(MethodResource):
                    "message": "Created shortened url"
                }, 201
 
-    @doc(description="Post endpoint for changing shortened link", tags=["url-shortening"])
-    @use_kwargs(
-        {
-            "path": fields.Str(description="The old shortened path which should be updated. "
-                                           "Example: 9adu2"),
-            "newPath": fields.Str(description="The new shortened path after the update. "
-                                              "Example: myNewPath123"),
-            "passwordPlaceholder": fields.Str(description="A value to transmit, to keep the old password. "
-                                                          "Example: keepOldPassword"),
-            "password": fields.Str(description="The new password to protect the shortened url. "
-                                               "Example: 123456"),
-            "urls": fields.List(fields.Str(), description="The new target urls of the shortened url. "
-                                                          'Example: ["https://otto.de"]'),
-            "endDurationDate": fields.Str(description="The new end duration until shortened url is valid. "
-                                                      "Example: 25-12-31T13:37"),
-            "clickLimit": fields.Int(description="The new amount of clicks until the shortened url is valid. "
-                                                 "Example: 200"),
-            "masterKey": fields.String(description="The master key to authorize for updating the path. "
-                                                   "Example: 1yYLJutiadpgLkVuT6yysMfSxg7NigTY")
-        }, location="query")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Successfully updated link")
-        }
-    ), code=200, description="The given path was successfully updated with the new values")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Required path parameter is missing")
-        }
-    ), code=400, description="The required path parameter is missing to update a shortened url")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Master key does not match")
-        }
-    ), code=401, description="The given master key parameter does not enable authorization for the protected path to "
-                             "update it")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="No link found for path")
-        }
-    ), code=404, description="There is no link stored matching the given path")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="New path already taken")
-        }
-    ), code=409, description="There exists already a shortened url with the same path as the desired new path")
-    def put(self, **kwargs):
+    @staticmethod
+    def put():
         log = bind_logging(request)
 
         args = parser.parse_args()
@@ -305,7 +186,8 @@ class Shortened(MethodResource):
                    }, 409
 
         # noinspection HttpUrlsUsage
-        new_urls_with_prefix = [url if url.startswith(("http://", "https://")) else "https://" + url for url in new_urls]
+        new_urls_with_prefix = [url if url.startswith(("http://", "https://")) else "https://" + url for url in
+                                new_urls]
         new_entry: {str: any} = {
             "path": new_path,
             "urls": new_urls_with_prefix,
@@ -325,31 +207,8 @@ class Shortened(MethodResource):
                    "message": "Successfully updated link"
                }, 200
 
-    @doc(description="Delete endpoint for deleting shortened link", tags=["url-shortening"])
-    @use_kwargs(
-        {
-            "path": fields.Str(description="The shortened path which should be deleted. "
-                                           "Example: 9adu2"),
-            "master_key": fields.Str(description="The master key to authorize for deleting the path. "
-                                                 "Example: 1yYLJutiadpgLkVuT6yysMfSxg7NigTY")
-        }, location="query")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Successfully deleted")
-        }
-    ), code=200, description="The given path was successfully deleted")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Required path parameter is missing")
-        }
-    ), code=400, description="The required path parameter is missing to delete a shortened url")
-    @marshal_with(Schema().from_dict(
-        {
-            "message": fields.Str(example="Entry not found or master key does not match")
-        }
-    ), code=401, description="The given master key parameter does not enable authorization for the protected path to "
-                             "delete it or there exist no shortened url for the given path parameter")
-    def delete(self, **kwargs):
+    @staticmethod
+    def delete():
         log = bind_logging(request)
 
         args = parser.parse_args()

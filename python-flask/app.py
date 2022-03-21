@@ -2,10 +2,7 @@ import json
 from datetime import datetime
 
 import bcrypt
-from apispec import APISpec
-from apispec.ext.marshmallow import MarshmallowPlugin
 from flask import Flask, request, render_template, redirect
-from flask_apispec.extension import FlaskApiSpec
 from flask_restful import Api
 from pymongo import DESCENDING
 from werkzeug.exceptions import NotFound
@@ -21,21 +18,6 @@ api = Api(app, prefix="/api")
 api.add_resource(Shortened, "/url")
 api.add_resource(QR, "/qr")
 api.add_resource(Validation, "/validate")
-
-app.config.update({
-    "APISPEC_SPEC": APISpec(
-        title="qshort",
-        version="v1",
-        plugins=[MarshmallowPlugin()],
-        openapi_version="2.0"
-    ),
-    "APISPEC_SWAGGER_UI_URL": "/api/"
-})
-
-docs = FlaskApiSpec(app)
-docs.register(QR)
-docs.register(Shortened)
-docs.register(Validation)
 
 
 @app.route("/")
