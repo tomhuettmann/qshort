@@ -4,8 +4,8 @@ on:
     branches:
       - main
 jobs:
-  pull:
-    name: Pull
+  deployment:
+    name: Deployment
     runs-on: ubuntu-latest
     steps:
       - name: pull repository
@@ -18,11 +18,6 @@ jobs:
           script: |
             cd /root/qshort
             git pull
-  build:
-    name: Build
-    needs: pull
-    runs-on: ubuntu-latest
-    steps:
       - name: build qshort image
         uses: appleboy/ssh-action@master
         with:
@@ -33,11 +28,6 @@ jobs:
           script: |
             cd /root/qshort/python-flask
             docker build -t qshort .
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: deploy mongodb
         uses: appleboy/ssh-action@master
         with:
@@ -60,11 +50,6 @@ jobs:
             docker stop qshort
             docker rm qshort
             docker run --name qshort --restart=always -d -p 127.0.0.1:5002:5000 qshort
-  network:
-    name: Network
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
       - name: setup docker network
         uses: appleboy/ssh-action@master
         with:
