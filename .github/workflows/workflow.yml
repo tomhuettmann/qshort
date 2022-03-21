@@ -1,0 +1,79 @@
+name: qshort deployment
+on:
+  push:
+    branches:
+      - main
+jobs:
+  pull:
+    name: Pull
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull repository
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: ${{ secrets.MACHINE_USER }}
+          password: ${{ secrets.MACHINE_PASSWORD }}
+          port: ${{ secrets.MACHINE_PORT }}
+          script: |
+            cd /root/qshort
+            git pull
+  build:
+    name: Build
+    needs: pull
+    runs-on: ubuntu-latest
+    steps:
+      - name: build qshort image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: ${{ secrets.MACHINE_USER }}
+          password: ${{ secrets.MACHINE_PASSWORD }}
+          port: ${{ secrets.MACHINE_PORT }}
+          script: |
+            cd /root/qshort/python-flask
+            docker build -t qshort .
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy mongodb
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: ${{ secrets.MACHINE_USER }}
+          password: ${{ secrets.MACHINE_PASSWORD }}
+          port: ${{ secrets.MACHINE_PORT }}
+          script: |
+            docker stop mongo
+            docker rm mongo
+            docker run --name mongo -d -p 127.0.0.1:27017:27017 -v /root/mongo:/data/db mongo:4.4.13
+      - name: deploy qshort
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: ${{ secrets.MACHINE_USER }}
+          password: ${{ secrets.MACHINE_PASSWORD }}
+          port: ${{ secrets.MACHINE_PORT }}
+          script: |
+            docker stop qshort
+            docker rm qshort
+            docker run --name qshort --restart=always -d -p 127.0.0.1:5002:5000 qshort
+  network:
+    name: Network
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup docker network
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: ${{ secrets.MACHINE_USER }}
+          password: ${{ secrets.MACHINE_PASSWORD }}
+          port: ${{ secrets.MACHINE_PORT }}
+          script: |
+            docker network remove qshort-network
+            docker network create qshort-network
+            docker network connect qshort-network qshort
+            docker network connect qshort-network mongo

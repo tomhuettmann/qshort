@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="de">
+<head>
+    <title>qshort</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/simple-notify.min.css') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}"/>
+    </noscript>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+    <!-- Header -->
+    <header id="header">
+        <a href="/" class="logo">qshort</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+        <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li><!--suppress HtmlUnknownTarget -->
+                <a href="/myLinks">My Links</a></li>
+            <li><!--suppress HtmlUnknownTarget -->
+                <a href="/recentLinks">Recent Links</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+        <section class="post">
+            <h2 class="possible-long-headline">Edit link: {{ link }}</h2>
+            <form onsubmit="editLinkFormSubmitted(); return false;">
+                <div class="row gtr-uniform">
+                    <div class="col-6 col-12-small">
+                        <label for="input-edit-path">Path</label>
+                        <input type="text" name="input-edit-path" id="input-edit-path" placeholder="{{ link }}"
+                               pattern="^[a-zA-Z0-9]*$" value="{{ link }}" maxlength="2048" required/>
+                    </div>
+                    <div class="col-6 col-12-small">
+                        <label for="input-edit-password">Password</label>
+                        <input onclick="passwordInputClicked(this)" type="password" name="input-edit-password"
+                               maxlength="10" id="input-edit-password"
+                               placeholder="{{ "keepOldPassword" if hashed_password else "" }}"
+                               value="{{ "hashed" if hashed_password else "" }}"/>
+                    </div>
+                    <div class="col-12">
+                        <label for="input-edit-target">Target</label>
+                        <!--suppress HtmlUnknownAttribute -->
+                        <textarea name="input-edit-target" id="input-edit-target" rows="5"
+                                  pattern="(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)((\r\n|\r|\n)(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))*"
+                                  required>{{ target }}</textarea>
+                    </div>
+                    <div class="col-6 col-12-small">
+                        <label for="input-edit-date">End duration</label>
+                        <input type=datetime-local name="input-edit-date" id="input-edit-date"
+                               value="{{ end_duration }}"/>
+                    </div>
+                    <div class="col-6 col-12-small">
+                        <label for="input-edit-click-limit">Click limit</label>
+                        <input type=number name="input-edit-click-limit" id="input-edit-click-limit" value="{{ click_limit }}"
+                               min="1" max="2000000000"/>
+                    </div>
+                    <div class="col-12">
+                        <ul class="actions">
+                            <li>
+                                <input id="edit-link-button" type="submit" onclick="" value="Save" class="primary"/>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- Copyright -->
+    <div id="copyright">
+        <ul>
+            <li>&copy; qshort</li>
+            <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrollex.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrolly.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/simple-notify.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/sweetalert2.all.min.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="de">
+<head>
+    <title>qshort</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/simple-notify.min.css') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}"/>
+    </noscript>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+    <!-- Header -->
+    <header id="header">
+        <a href="/" class="logo">qshort</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+        <ul class="links">
+            <li><a href="/">Home</a></li>
+            <li class="active"><!--suppress HtmlUnknownTarget -->
+                <a href="/myLinks">My Links</a></li>
+            <li><!--suppress HtmlUnknownTarget -->
+                <a href="/recentLinks">Recent Links</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+        <section class="post">
+            <h2>Add Link</h2>
+            <form onsubmit="myLinkFormSubmitted(); return false;" id="input-form">
+                <div class="row gtr-uniform">
+                    <div class="col-4 col-6-small col-12-xsmall">
+                        <input type="text" name="input-myLink-path" id="input-myLink-path" value=""
+                               placeholder="Path of link" onclick="removeWrongPasswordClass()" required/>
+                    </div>
+                    <div class="col-4 col-6-small col-12-xsmall">
+                        <input type="text" name="input-myLink-masterKey" id="input-myLink-masterKey" value=""
+                               placeholder="Master key of link" onclick="removeWrongPasswordClass()" required/>
+                    </div>
+                    <div class="col-4 col-12-small">
+                        <ul class="actions">
+                            <li><input id="myLink-button" type="submit" onclick="" value="Add Link"
+                                       class="primary"/></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <h2>My Links</h2>
+            <div class="table-wrapper">
+                <table id="data">
+                    <tbody>
+                    {% for link in links %}
+                        <tr>
+                            <td class="my-links-path"><a href="/{{ link }}" target="_blank">{{ link }}</a></td>
+                            <td class="property-view-edit"><a class="pointer-cursor" href="/view/{{ link }}">Info</a>
+                            </td>
+                            <td class="property-view-edit"><a class="pointer-cursor" href="/edit/{{ link }}">Edit</a>
+                            </td>
+                            <td class="property-view-edit">
+                                <a class="pointer-cursor" onclick='deletePressed("{{ link }}");'>Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div id="pagination-footer" style="display: none">
+                <div class="pagination" id="pagination"><a class="previous" style="opacity: 0">Prev</a></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Copyright -->
+    <div id="copyright">
+        <ul>
+            <li>&copy; qshort</li>
+            <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrollex.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrolly.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/simple-notify.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/sweetalert2.all.min.js') }}"></script>
+
+</body>
+</html>

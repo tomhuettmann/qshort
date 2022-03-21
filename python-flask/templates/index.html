@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="de">
+<head>
+    <title>qshort</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/simple-notify.min.css') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}"/>
+    </noscript>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+    <!-- Header -->
+    <header id="header">
+        <a href="/" class="logo">qshort</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+        <ul class="links">
+            <li class="active"><a href="/">Home</a></li>
+            <li><!--suppress HtmlUnknownTarget -->
+                <a href="/myLinks">My Links</a></li>
+            <li><!--suppress HtmlUnknownTarget -->
+                <a href="/recentLinks">Recent Links</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+        <section class="post">
+            <h2>Shorten Links</h2>
+
+            <form onsubmit="shortenLinkFormSubmitted(); return false;" id="input-form">
+                <div class="row gtr-uniform">
+                    <div class="col-12">
+                        <label for="input-link" id="input-link-label">Link to short</label>
+                        <input type="text" name="input-link" id="input-link" value=""
+                               placeholder="Example: https://google.de or google.de/path"
+                               pattern="(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                               required/>
+                        <label for="input-multiple-link" id="input-multiple-link-label">Links to short</label>
+                        <!--suppress HtmlUnknownAttribute -->
+                        <textarea name="input-links" id="input-multiple-link" rows="5"
+                                  placeholder="One link per line. Example:&#10;https://google.de&#10;google.de/path"
+                                  pattern="(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)((\r\n|\r|\n)(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))*"
+                                  disabled></textarea>
+                    </div>
+                    <div class="col-12">
+                        <b><a id="advanced-settings-button" style="font-size: 1.2rem">[+] Advanced Settings</a></b>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-password-bool" name="input-password-bool">
+                        <label for="input-password-bool">Set a <b>password</b> to protect the link</label>
+                        <input type="text" name="input-password-text" id="input-password-text" value=""
+                               placeholder="password" style="display: none" disabled/>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-duration-bool" name="input-duration-bool">
+                        <label for="input-duration-bool">Set an <b>end duration</b> date for link</label>
+                        <input type=datetime-local name="input-duration-date" id="input-duration-date" value=""
+                               style="display: none" disabled/>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-wish-bool" name="input-wish-bool">
+                        <label for="input-wish-bool">Set a desired <b>URL path</b> for link</label>
+                        <input type=text name="input-wish-text" id="input-wish-text" value="" placeholder="myPath123"
+                               pattern="^[a-zA-Z0-9]*$" maxlength="2048" style="display: none" disabled/>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-length-bool" name="input-length-bool">
+                        <label for="input-length-bool">Set a desired <b>path length</b> for link</label>
+                        <input type=number name="input-length-number" id="input-length-number"
+                               style="display: none" placeholder="5" min="5" max="2048" disabled/>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-click-limit-bool" name="input-click-limit-bool">
+                        <label for="input-click-limit-bool">Set a <b>click limit</b> for link</label>
+                        <input type=number name="input-click-limit-number" id="input-click-limit-number"
+                               style="display: none" placeholder="15" min="1" max="2000000000" disabled/>
+                    </div>
+                    <div class="col-6 col-12-small advanced-settings">
+                        <input type="checkbox" id="input-multiple-bool" name="input-multiple-bool">
+                        <label for="input-multiple-bool">Enable <b>multiple entries</b> for shortened link</label>
+                    </div>
+                    <div class="col-12">
+                        <ul class="actions">
+                            <li><input id="short-link-button" type="submit" onclick="" value="Short Link"
+                                       class="primary large"/></li>
+                            <li><input type="reset" value="Reset" class="small"/></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <div id="shortened-link-container" class="row gtr-uniform">
+                <div class="col-12-small max-width-100">
+                    <p id="shortened-link-text-paragraph">The shortened link is: <b><a id="shortened-link" href="#"
+                                                                                       target="_blank"></a></b></p>
+                </div>
+                <div class="col-3 col-12-small">
+                    <ul class="actions">
+                        <li><a id="copy-shortened-link-button" class="button primary">Copy Link</a></li>
+                    </ul>
+                </div>
+                <div class="col-12">
+                    <h3>Properties</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <tbody>
+                            <tr id="property-target-row" class="property-row">
+                                <td class="property-title"><b>Target</b>:</td>
+                                <td id="property-target-content" class="property-content"></td>
+                            </tr>
+                            <tr id="property-password-row" class="property-row">
+                                <td class="property-title"><b>Password</b>:</td>
+                                <td id="property-password-content" class="property-content"></td>
+                            </tr>
+                            <tr id="property-duration-row" class="property-row">
+                                <td class="property-title"><b>End duration</b>:</td>
+                                <td id="property-duration-content" class="property-content"></td>
+                            </tr>
+                            <tr id="property-target-row" class="property-row">
+                                <td class="property-title"><b>Master key</b>:</td>
+                                <td id="property-masterKey-content" class="property-content"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="generate-qr-code-container col-12">
+                    <ul class="actions">
+                        <li><a class="button primary" onclick="loadQrCodeForShortenedUrl()">Generate QR-Code</a></li>
+                    </ul>
+                </div>
+                <div class="qr-code-container col-12">
+                    <h3>QR-Code for shortened link</h3>
+                </div>
+                <div class="qr-code-container col-8-xsmall col-6-small col-4-medium col-2-large">
+                    <span class="image fit"><img id="qr-code-image" alt="" src=""/></span>
+                </div>
+                <div class="qr-code-container col-12">
+                    <ul class="actions">
+                        <li><a id="download-qr-code-button" class="button primary">Download QR-Code</a></li>
+                    </ul>
+                </div>
+                <div class="col-12">
+                    <ul class="actions">
+                        <li><a id="download-qr-code-button" class="button" href="/">Short another one</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Copyright -->
+    <div id="copyright">
+        <ul>
+            <li>&copy; qshort</li>
+            <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrollex.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/jquery.scrolly.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/indexVisibility.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/simple-notify.min.js') }}"></script>
+
+</body>
+</html>
