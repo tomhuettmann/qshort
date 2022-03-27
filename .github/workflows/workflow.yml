@@ -38,7 +38,7 @@ jobs:
           script: |
             docker stop mongo
             docker rm mongo
-            docker run --name mongo -d -p 127.0.0.1:27017:27017 -v /root/mongo:/data/db mongo:4.4.13
+            docker run --name mongo --restart=always -d -p 127.0.0.1:27017:27017 -v /root/mongo:/data/db mongo:4.4.13
       - name: deploy qshort
         uses: appleboy/ssh-action@master
         with:
@@ -49,7 +49,7 @@ jobs:
           script: |
             docker stop qshort
             docker rm qshort
-            docker run --name qshort --restart=always -d -p 127.0.0.1:5002:5000 qshort
+            docker run --name qshort --restart=always -d -p 127.0.0.1:5000:5000 qshort
       - name: setup docker network
         uses: appleboy/ssh-action@master
         with:
